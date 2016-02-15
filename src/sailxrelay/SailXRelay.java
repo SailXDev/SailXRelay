@@ -9,7 +9,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.Date;
 
-import java.io.InputStream;
 import java.io.IOException;
 import java.net.*;
 import java.io.FileInputStream;
@@ -53,6 +52,7 @@ public class SailXRelay extends WebSocketServer {
 
         static String location=""; 
         static int myPort=3000;
+        static String myIPAddress="";
         
 	public static void main( String[] args ) throws  UnknownHostException {
             WebSocketImpl.DEBUG = false;
@@ -68,6 +68,7 @@ public class SailXRelay extends WebSocketServer {
                     // get the property value and print it out
                     location=prop.getProperty("location");
                     myPort=Integer.parseInt(prop.getProperty("port"));
+                    myIPAddress=prop.getProperty("ipaddress");
                         
             } catch (IOException ex) {
                     ex.printStackTrace();
@@ -97,7 +98,8 @@ public class SailXRelay extends WebSocketServer {
                 server.start();
                 System.out.println( "Starting HTTP server port: " + (myPort+1));
             } catch(Exception ee) {}    
-            System.out.println( "Starting Relay at location: " + location + " port: " + myPort);
+            
+            System.out.println( "Starting Relay at location: " + location + " IpAddress: " + myIPAddress + "  port: " + myPort);
             new SailXRelay( myPort, new Draft_17() ).start();
                 
     
@@ -121,14 +123,12 @@ public class SailXRelay extends WebSocketServer {
                 timer = new Timer();
 
                 TimerTask task = new TimerTask() {
-                    int tic=0;
-                    InetAddress IP=InetAddress.getLocalHost();
                     @Override
                     public void run()
                     {
                         try {
                             URL url = new URL("http://www.sailx.com/modphp/request.php?action=relayhb"
-                                    + "&myip="+IP.getHostAddress()+"&myport="+ myPort 
+                                    + "&myip="+myIPAddress+"&myport="+ myPort 
                                     + "+&location="+location);
                             InputStream is = url.openStream();
                             try {
